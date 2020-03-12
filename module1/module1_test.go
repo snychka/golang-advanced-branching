@@ -1,4 +1,4 @@
-package main
+package module1
 
 import (
 	"go/ast"
@@ -12,6 +12,9 @@ import (
 	"strings"
 	"testing"
 )
+
+// Project : Build a Vehicle Rating System in Go
+// Module 1: Defining interface, structs and variables
 
 // Task 1: Define vehicle interface
 func TestVehicleInterfaceIsDefined(t *testing.T) {
@@ -169,17 +172,14 @@ func TestVariables(t *testing.T) {
 // Task 11: Checking var initialization under func init
 func TestInitializeVars(t *testing.T) {
 
-	if vehicleResult == nil {
-		t.Error("Did not initialize `vehicleResult` using make statement within `init` function")
-	} 
-
-	if inventory == nil {
-		t.Error("Did not uncomment `inventory' slice within 'init` function")
+	if !checkVarWithinFunc("init", "vehicleResult") {
+		t.Error("Uncomment the `vehicleResult` assignment statement within the `init` function ")
 	}
-	
+
+	if !checkVarWithinFunc("init", "inventory") {
+		t.Error("Uncomment the `inventory` assignment statement within the `init` function ")
+	}
 }
-
-
 
 // ------------------------------------- Compute functions -------------------------------
 
@@ -188,10 +188,10 @@ func readFile() *ast.File {
 
 	_, currentFile, _, _ := runtime.Caller(1)
 
-	src, err := ioutil.ReadFile(path.Join(path.Dir(currentFile), "vehicle.go"))
+	src, err := ioutil.ReadFile(path.Join(path.Dir(currentFile), "../vehicle.go"))
 
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("This is the error", src)
 	}
 
 	fset := token.NewFileSet()
@@ -201,6 +201,41 @@ func readFile() *ast.File {
 		panic(err)
 	}
 	return f
+}
+
+// function for checking assiged variables within functions.
+func checkVarWithinFunc(funcName, varName string) bool {
+	foundVarName, foundFunc := false, false
+
+	f := readFile()
+
+	var funcBody []ast.Stmt
+
+	for _, decl := range f.Decls {
+		if reflect.TypeOf(decl).String() == "*ast.FuncDecl" {
+			funcDecl := decl.(*ast.FuncDecl)
+			if funcDecl.Name.String() == funcName {
+				funcBody = funcDecl.Body.List
+				foundFunc = true
+				break
+			}
+		}
+	}
+
+	if foundFunc {
+		for _, b := range funcBody {
+			if reflect.TypeOf(b).String() == "*ast.AssignStmt" {
+				s := b.(*ast.AssignStmt)
+				if s.Lhs[0].(*ast.Ident).String() == varName {
+					foundVarName = true
+				}
+			}
+		}
+
+	}
+
+	return foundFunc && foundVarName
+ 
 }
 
 // Function for checking map
@@ -274,7 +309,7 @@ func checkSlice(sliceName, sliceType string) bool {
 		}
 	}
 
-	if foundSliceName  && findSlice.Elt.(*ast.Ident).String() == sliceType {
+	if foundSliceName && findSlice.Elt.(*ast.Ident).String() == sliceType {
 		foundSliceType = true
 
 	}
