@@ -85,7 +85,6 @@ func main() {
 	// Print ratings for the different vehicles
 }
 
-/*
 func readJSONFile() Values {
 	jsonFile, err := os.Open("feedback.json")
 
@@ -101,4 +100,13 @@ func readJSONFile() Values {
 
 	return content
 }
-*/
+
+func generateRating() {
+    f := readJSONFile()
+    for _, v := range f.Models {
+        var vehResult feedbackResult
+        var vehRating rating 
+    }
+    for _, msg := range v.Feedback {
+    }
+}
