@@ -84,6 +84,18 @@ func main() {
   generateRating()
 	
 	// Print ratings for the different vehicles
+  for _, veh := range inventory {
+    switch v := veh.(type) {
+    case car:
+      v.carDetails()
+    case bike:
+      v.bikeDetails()
+    case truck:
+      v.truckDetails()
+    default:
+      fmt.Printf("Are you sure this Vehicle Type exists")
+    }
+  }
 }
 
 func readJSONFile() Values {
@@ -137,4 +149,25 @@ func generateRating() {
     vehicleResult[v.Name] = vehResult
     }
 
+}
+
+func showRating(model string) {
+  ratingFound := false
+  for m, r := range vehicleResult {
+    //if model==m {
+    if m == model{
+      fmt.Printf("Total Ratings:%v\tPositive:%v\tNegative:%v\tNeutral:%v", r.feedbackTotal, r.feedbackPositive, r.feedbackNegative, r.feedbackNeutral)
+      ratingFound = true
+    }
+  }
+  if !ratingFound {
+    fmt.Printf("No Rating for this vehicle")
+  }
+}
+
+func (c *car) carDetails() {
+}
+func (b *bike) bikeDetails() {
+}
+func (t *truck) truckDetails() {
 }
